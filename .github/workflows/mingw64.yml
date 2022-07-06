@@ -88,8 +88,16 @@ jobs:
           cp $top/contrib/glshaders/* $top/package/mingw-build/mingw-sdl2/glshaders/
           cp $top/contrib/translations/*/*.lng $top/package/mingw-build/mingw-sdl2/languages/
           cp $top/COPYING $top/package/COPYING
-      - name: Upload release package
+          cd $top/package/
+          $top/vs/tool/zip.exe -r -9 $top/dosbox-x-mingw-win64-${{ env.timestamp }}.zip *
+          cd $top
+      - name: Upload preview package
         uses: actions/upload-artifact@v3.1.0
         with:
           name: dosbox-x-mingw-win64-${{ env.timestamp }}
           path: ${{ github.workspace }}/package/
+      - name: Upload release package
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: dosbox-x-mingw-win64-${{ env.timestamp }}.zip
